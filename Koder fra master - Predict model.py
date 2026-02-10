@@ -222,9 +222,9 @@ for month in [1,2,3, 4]:
 
     print(f"Chi-squared statistic: {chi_squared_stat:.3f}")
     if chi_squared_stat > critical_value:
-        print("Chi-squared test result: ❌ Reject null hypothesis (non-uniform PIT)")
+        print("Chi-squared test result: Reject null hypothesis (non-uniform PIT)")
     else:
-        print("Chi-squared test result: ✅ Fail to reject null hypothesis (uniform PIT)")
+        print("Chi-squared test result: Fail to reject null hypothesis (uniform PIT)")
 
 
 
