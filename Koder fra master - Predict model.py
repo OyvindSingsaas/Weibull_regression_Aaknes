@@ -1,6 +1,4 @@
 # Predict models
-
-#%%
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from lifelines import WeibullAFTFitter
@@ -16,10 +14,8 @@ from datetime import datetime
 from scipy.integrate import trapezoid
 
 
-#%%
 # ---- Import data, 2007 - April 2025:
-df = pd.read_csv(data_path)
-#%%
+df = pd.read_csv("data/merged_event_and_met_data_23_adjusted_WT-kopi.csv")
 
 # ---- Some data preparations: 
 
@@ -61,7 +57,6 @@ df = df[['Date', 'waiting time', 'temperature', 'rain', 'rain_last_3_days', 'rai
 
 df['Date'] = pd.to_datetime(df['Date']).dt.tz_localize(None)
 
-#%%
 
 # --- NN model: 
 class FeatureModel(tf.keras.Model):
@@ -225,6 +220,5 @@ for month in [1,2,3, 4]:
         print("Chi-squared test result: Reject null hypothesis (non-uniform PIT)")
     else:
         print("Chi-squared test result: Fail to reject null hypothesis (uniform PIT)")
-
 
 

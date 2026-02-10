@@ -1,5 +1,4 @@
-#%%
-# 
+
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from lifelines import WeibullAFTFitter, ExponentialFitter, WeibullFitter
@@ -14,10 +13,8 @@ from tensorflow.keras.models import Model
 import os
 from tensorflow.keras.callbacks import EarlyStopping
 
-
-#%%
-
 # Load the data
+data_path = "data/merged_event_and_met_data_23_adjusted_WT-kopi.csv"
 df = pd.read_csv(data_path)
 
 # Preprocessing:
@@ -72,8 +69,6 @@ y = filtered_df['waiting time'].values
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
 
-#%% 
-
 # Define the neural network 
 class FeatureModel(tf.keras.Model):
     def __init__(self, input_dim):
@@ -125,7 +120,6 @@ history = model.fit(
     callbacks=[early_stopping]
 )
 
-#%%
 # Create new data set
 
 # Extract new features from the trained model
@@ -143,7 +137,6 @@ df_combined['waiting time'] = y_train
 df_combined['event'] = 1  # All data censored
 aft_model_nll_loss.fit(df_combined, duration_col='waiting time', event_col='event')
 
-#%%
 # List of features to plot - original covariates
 features_to_plot = [
     'rain',
@@ -184,8 +177,6 @@ custom_labels = {
     "Season_Summer": "Summer",
     "Season_Winter": "Winter"
 }
-
-# %%
 
 #Store PDP data for all runs
 pdp_results = {feature: [] for feature in features_to_plot}
@@ -273,8 +264,6 @@ for run in range(10):
         # Store PDP line for this run
         pdp_results[feature_name].append((feature_values_original, mean_expected_times))
 
-
-#%%
 # Correct scale x-axis 
 
 # Map feature name to original mean and std for inverse transformation
@@ -321,9 +310,8 @@ for feature_name in features_to_plot:
 
     # Save the plot to the specified path
     plot_filename = f"PDP_{feature_name}_20runs.png"
-    plot_filepath = os.path.join(save_dir, plot_filename)
+    plot_filepath = os.path.join("results/", plot_filename)
 
-# %%
 # Map feature name to original mean and std for inverse transformation
 feature_means = dict(zip(numerical_cols, scaler.mean_))
 feature_stds = dict(zip(numerical_cols, scaler.scale_))
@@ -364,13 +352,6 @@ for feature_name in features_to_plot:
     plt.yticks(fontsize=14)
     plt.tight_layout()
     #plt.show()
-
-# %%
-#Plotting just date
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import os
 
 feature_name = "date_numeric"
 

@@ -1,6 +1,4 @@
 # NN model for data 2007 - 2021, not extra features
-
-#%%
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from lifelines import WeibullAFTFitter, ExponentialFitter, WeibullFitter
@@ -14,15 +12,8 @@ from scipy.interpolate import interp1d
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 
-
-
-# %%
-#%%
 # ---- Load data:
-df = pd.read_csv('/Users/kjerstidengerud/Documents/Fysmat/Masteroppgave/Aaknes data/Egne datasett/merged_event_and_met_data_23_adjusted_WT.csv')
-#df = pd.read_csv('/filepath/merged_event_and_met_data_23_adjusted_WT.csv')
-
-#%%
+df = pd.read_csv('data/merged_event_and_met_data_23_adjusted_WT-kopi.csv')
 
 # ---- Some data prep:
 df = df.rename(columns={'waiting_time': 'waiting time'})
@@ -76,7 +67,6 @@ filtered_df = df[df['waiting time'] <= upper_limit]
 # #Choose columns
 filtered_df = filtered_df[['waiting time', 'temperature', 'rain', 'rain_last_3_days', 'temp_avg_last_3_days', 'Season_Spring', 'Season_Summer', 'Season_Winter', 'Registered_Events_Last_5_Days', 'date_numeric', 'snowmelt', 'WorkingGeophones']]
 
-#%%
 # Identify numerical and categorical features
 categorical_cols = ['Season_Spring', 'Season_Summer', 'Season_Winter']
 numerical_cols = [col for col in filtered_df.columns if col not in categorical_cols + ['waiting time']]
@@ -98,7 +88,6 @@ y = filtered_df['waiting time'].values
 # Split train/test
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
-#%% 
 # ---- Create NN model: 
 
 class FeatureModel(tf.keras.Model):
@@ -148,7 +137,6 @@ history = model.fit(
     validation_data=(X_test, y_test),
     callbacks=[early_stopping])
 
-# %%
 # ---- Create new data set for aft model, and fit model: 
 
 # Extract new features from the trained model
@@ -176,7 +164,6 @@ aft_model_nll_loss.fit(df_combined, duration_col='waiting time', event_col='even
 # print(aft_model_nll_loss.AIC_)
 # print(aft_model_nll_loss.BIC_)
 
-# %%
 # --- PIT histograms:
 
 # Array for å lagre CDF-verdier for alle observasjoner
@@ -201,8 +188,6 @@ plt.ylabel("Density", fontsize = 18)
 plt.tick_params(axis='both', which='major', labelsize=18)
 plt.show()
 
-
-#%%
 # ---- CRPS:
 from scipy.integrate import trapezoid
 
@@ -235,4 +220,3 @@ for i in range(len(X_test)):
 mean_crps = np.mean(crps_values)
 
 print(f"Mean CRPS over all points: {mean_crps:.4f}")
-# %%
