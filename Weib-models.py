@@ -1,10 +1,7 @@
 
 #Code Weib models: exponential, Weibull and Weibull AFT
 
-#Simuleringsstudie - Åknes resultater med ny fil 
-#Snøsmelting + 2021 og 2022
-
-#Simuleringsstudie Åknes data
+# Simulation study Åknes data
 
 #%%
 import numpy as np
@@ -24,7 +21,7 @@ from scipy.integrate import trapezoid
 
 #%%
 # ---- Import data:
-dff = pd.read_csv('CSV filer/Egne datasett/merged_event_and_met_data_23_adjusted_WT.csv')
+dff = pd.read_csv(data_path)
 
 
 # --- Some data preparations: 
@@ -46,7 +43,7 @@ dff = dff[dff['T'] <= upper_limit]
 
 dff['Date'] = pd.to_datetime(dff['Date'])
 
-# Define a function to determine season
+# Define a function to determine the season
 def get_season(month):
     if month in [12, 1, 2]:
         return 'Winter'
@@ -82,18 +79,14 @@ dff['Season_Winter'] = dff['Season_Winter'].astype(int)
 # Remove 2022
 dff['Year'] = pd.to_datetime(dff['Date']).dt.year
 dff = dff[dff['Year'] != 2022]
-
-# Sort, not necessary?
 dff = dff.sort_values(by='Date')
 
-# Lag en ny kolonne som viser antall hendelser de siste 5 dagene
+# Number of events last five days
 dff['Registered_Events_Last_5_Days'] = dff['Date'].apply(
     lambda x: ((dff['Date'] >= (x - pd.Timedelta(days=5))) & (dff['Date'] < x)).sum())
 
 # Convert to numeric (Unix timestamp in seconds)
 dff['date_numeric'] = dff['Date'].astype('int64') // 10**9  # Convert nanoseconds to seconds - delt på 1000 igjen
-
-# Sørg for at alle kolonnene er tilgjengelige
 dff = dff[['T', 'Sesong_Vår', 'Season_Summer', 'Season_Winter', 'Nedbør', 'Temperatur', 'snowmelt', 'WorkingGeophones', 
            'rain_last_3_days', 'temp_avg_last_3_days', 'Registered_Events_Last_5_Days', 'date_numeric']]
 
@@ -123,24 +116,17 @@ print(f"Weibull AFT2 (with covariates) - AIC: {aft2.AIC_}, BIC: {aft2.BIC_}")
 # Array for å lagre CDF-verdier for alle observasjoner
 all_cdf_values = []
 
-# Beregner en CDF-verdi for hver rad i df
+# Compute a CDF-verdi for each row in df
 for i in range(len(test_dff)):
-    # Beregn CDF for rad i (forutsatt at predict_cumulative_hazard gir flere verdier per rad)
     cdf_data = aft2.predict_cumulative_hazard(test_dff.iloc[[i]])  # Hent CDF data (DataFrame)
-    
-    # Bruk første kolonne som T_values og andre kolonne som CDF-verdier
     T_value = test_dff.iloc[i]['T']  # Første kolonne (tid)
-    #cdf_value = 1 - np.exp(-cdf_data.loc[T_value]) #Regner ut cdf fra chf
     cdf_value = 1 - np.exp(-np.interp(T_value, cdf_data.index.to_numpy().ravel(), cdf_data.values.ravel()))
-
-
-    # Legg til denne CDF-verdien i listen
     all_cdf_values.append(cdf_value)
 
-# Konverterer listen til et NumPy-array
+# Convert to numpy
 all_cdf_values = np.array(all_cdf_values)
 
-# Plotter histogram av CDF-verdiene
+# Plot histogram of CDF values
 plt.figure(figsize=(6, 4))
 plt.hist(all_cdf_values, bins=50, alpha=0.7, color='darkgreen', density=True)
 plt.title("CDF-values Weibull Model (w/ linear cov.)", fontsize = 20)
@@ -183,9 +169,6 @@ for i in range(len(test_dff)):
 mean_crps = np.mean(crps_values)
 
 print(f"Mean CRPS over all points: {mean_crps:.4f}")
-
-
-
 
 #%%
 
