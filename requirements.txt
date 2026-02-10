@@ -1,0 +1,7 @@
+tensorflow>=2.10
+numpy
+pandas
+matplotlib
+scikit-learn
+lifelines
+scipy
