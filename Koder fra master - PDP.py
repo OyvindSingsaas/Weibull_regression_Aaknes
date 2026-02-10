@@ -18,7 +18,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 #%%
 
 # Load the data
-df = pd.read_csv('/Users/kjerstidengerud/Documents/Fysmat/Masteroppgave/Aaknes data/Egne datasett/merged_event_and_met_data_23_adjusted_WT.csv')
+df = pd.read_csv(data_path)
 
 # Preprocessing:
 df = df.rename(columns={'waiting_time': 'waiting time'})
