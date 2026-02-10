@@ -18,7 +18,7 @@ from scipy.integrate import trapezoid
 
 #%%
 # ---- Import data, 2007 - April 2025:
-df = pd.read_csv('/filepath/Aknes_and_met_data.csv')
+df = pd.read_csv(data_path)
 #%%
 
 # ---- Some data preparations: 
