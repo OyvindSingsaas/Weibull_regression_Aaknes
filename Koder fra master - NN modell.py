@@ -1,8 +1,5 @@
-
-
 # Kode for NN modell - with extra features 
 
-#%%
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from lifelines import WeibullAFTFitter, ExponentialFitter, WeibullFitter
@@ -17,11 +14,8 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 #from tensorflow.keras import layers, models, regularizers
 
-#%%
 # ---- Import data, 2007 - April 2025:
-df = pd.read_csv('/filepath/Aknes_and_met_data.csv')
-
-#%%
+df = pd.read_csv('/data/Aknes_and_met_data.csv')
 
 # ---- Some data preparations: 
 
@@ -91,7 +85,6 @@ filtered_df = df[df['waiting time'] <= upper_limit]
 # Data set used in model, choose relevant columns
 filtered_df = filtered_df[['waiting time', 'temperature', 'rain', 'rain_last_3_days', 'rain_last_7_days', 'rain_last_14_days', 'temp_avg_last_3_days','temp_avg_last_7_days', 'temp_avg_last_14_days', 'Season_Spring', 'Season_Summer', 'Season_Winter','Registered_Events_Last_1_Days', 'Registered_Events_Last_3_Days', 'Registered_Events_Last_7_Days', 'Registered_Events_Last_14_Days', 'date_numeric', 'snowmelt', 'WorkingGeophones']]
 
-# %%
 
 # ---- Scale covariates and split to train / test data: 
 
@@ -114,8 +107,6 @@ y = filtered_df['waiting time'].values
 
 # Split train / test
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
-
-#%%
 
 # ---- Neural network model: 
 
@@ -169,8 +160,6 @@ history = model.fit(
     validation_data=(X_test, y_test),
     callbacks=[early_stopping])
 
-# %%
-
 # ---- Create new data set for AFT model and fit AFT model: 
 
 # Extract new features from the trained model
@@ -197,8 +186,6 @@ aft_model_nll_loss.fit(df_combined, duration_col='waiting time', event_col='even
 df_combined_test = pd.DataFrame(new_features_test, columns=[f'feat_{i}' for i in range(3)])
 df_combined_test['waiting time'] = y_test
 df_combined_test['event'] = 1  # all data censored
-
-# %%
 
 # ---- Calculate CDF values to create PIT-histograms:
 
@@ -227,8 +214,6 @@ plt.ylabel("Density", fontsize = 18)
 plt.tick_params(axis='both', which='major', labelsize=18)
 plt.show()
 
-
-#%%
 # ---- Calculatehe CRPS: 
 
 from scipy.integrate import trapezoid
