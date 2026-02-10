@@ -86,21 +86,6 @@ def custom_loss(y_true, y_pred):
                       tf.math.pow(y_true / alpha, k_pos))
     return -tf.reduce_mean(log_likelihood)
 
-# # Loop over each month in year 20XX
-# for month in range(1, 13):
-#     start_date = f"2024-{month:02d}-01"
-#     end_day = monthrange(2024, month)[1]
-#     end_date = f"2024-{month:02d}-{end_day}"
-#     print(f"\n### Month: {start_date} to {end_date} ###")
-
-#     train_df = df[df['Date'] < pd.Timestamp(start_date)]
-#     test_df = df[(df['Date'] >= pd.Timestamp(start_date)) & (df['Date'] <= pd.Timestamp(end_date))]
-
-#     if test_df.empty or train_df.empty:
-#         print(f"Skipping month {month}: Not enough data")
-#         continue
-
-# Or: Loop over March and April 2025
 for month in [1,2,3, 4]:
     start_date = f"2025-{month:02d}-01"
     end_day = monthrange(2025, month)[1]
