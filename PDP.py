@@ -184,10 +184,6 @@ pdp_results = {feature: [] for feature in features_to_plot}
 # Loop 5 times
 for run in range(10):
     print(f"Run {run + 1} / 5")
-
-    # Re-split data with different seed each run
-    #X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42 + run)
-
     # Initialize and train model
     model = FeatureModel(input_dim=X_train.shape[1])
     model.compile(optimizer=tf.keras.optimizers.Adam(0.001), loss=custom_loss)
